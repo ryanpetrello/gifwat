@@ -9,6 +9,10 @@ const SearchBar = forwardRef(function SearchBar({ value, onChange }, ref) {
       placeholder="Search by URL or tag..."
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      autoComplete="off"
+      autoCorrect="off"
+      autoCapitalize="off"
+      spellCheck="false"
     />
   );
 });
