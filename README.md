@@ -1,5 +1,7 @@
 # GifWat
 
+[![Tests](https://github.com/ryanpetrello/gifwat/actions/workflows/test.yml/badge.svg)](https://github.com/ryanpetrello/gifwat/actions/workflows/test.yml)
+
 A macOS menu bar app for cataloging and quickly accessing GIFs. Spiritual successor to [GifWit](https://gifwit.com/).
 
 <video src="https://github.com/user-attachments/assets/b7d41838-e440-40ee-a900-82dbcef0dc61" autoplay loop muted playsinline></video>
