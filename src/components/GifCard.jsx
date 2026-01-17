@@ -5,7 +5,12 @@ function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const cardRef = useRef(null);
+  const maxRetries = 3;
+
+  // Upgrade http:// to https:// for mixed content compatibility
+  const imageUrl = gif.url.replace(/^http:\/\//i, 'https://');
 
   // Scroll selected card into view
   useEffect(() => {
@@ -23,11 +28,6 @@ function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Reset error state to retry loading when scrolling back into view
-          if (imageError) {
-            setImageError(false);
-            setImageLoaded(false);
-          }
         }
       },
       { rootMargin: '50px' }
@@ -35,7 +35,19 @@ function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, [imageError]);
+  }, []);
+
+  // Auto-retry failed images
+  const handleImageError = () => {
+    if (retryCount < maxRetries) {
+      // Retry after a delay
+      setTimeout(() => {
+        setRetryCount((c) => c + 1);
+      }, 1000 * (retryCount + 1)); // Exponential backoff: 1s, 2s, 3s
+    } else {
+      setImageError(true);
+    }
+  };
 
   const handleDeleteClick = (e) => {
     e.stopPropagation();
@@ -59,9 +71,10 @@ function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
           <>
             {!imageLoaded && <div className="gif-loading" />}
             <img
-              src={gif.url}
+              key={retryCount}
+              src={imageUrl}
               alt="GIF"
-              onError={() => setImageError(true)}
+              onError={handleImageError}
               onLoad={() => setImageLoaded(true)}
               style={imageLoaded ? {} : { display: 'none' }}
             />
