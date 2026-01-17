@@ -1,8 +1,3 @@
-#![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
-)]
-
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -11,12 +6,9 @@ use std::sync::Mutex;
 // Store last known tray icon position for keyboard shortcut
 static LAST_TRAY_POSITION: Mutex<(f64, f64)> = Mutex::new((0.0, 0.0));
 use tauri::{
-    AppHandle, ClipboardManager, CustomMenuItem, GlobalShortcutManager, Manager,
+    ActivationPolicy, AppHandle, ClipboardManager, CustomMenuItem, GlobalShortcutManager, Manager,
     SystemTray, SystemTrayEvent, SystemTrayMenu, WindowEvent,
 };
-
-#[cfg(target_os = "macos")]
-use tauri::ActivationPolicy;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct Gif {
@@ -234,22 +226,16 @@ fn main() {
             }
         })
         .setup(|app| {
-            // Hide from dock on macOS
-            #[cfg(target_os = "macos")]
+            // Hide from dock
             app.set_activation_policy(ActivationPolicy::Accessory);
 
             let app_handle = app.handle();
 
-            // Register global shortcut (Cmd+Shift+G on macOS)
+            // Register global shortcut
             let mut shortcut_manager = app.global_shortcut_manager();
-            let shortcut = if cfg!(target_os = "macos") {
-                "Cmd+Shift+G"
-            } else {
-                "Ctrl+Shift+G"
-            };
 
             shortcut_manager
-                .register(shortcut, move || {
+                .register("Cmd+Shift+G", move || {
                     toggle_window_default(&app_handle);
                 })
                 .ok();
