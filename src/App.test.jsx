@@ -34,7 +34,9 @@ describe('App', () => {
       expect(invoke).toHaveBeenCalledWith('get_gifs');
     });
 
-    expect(screen.getAllByAltText('GIF')).toHaveLength(3);
+    await waitFor(() => {
+      expect(screen.getAllByAltText('GIF')).toHaveLength(3);
+    });
   });
 
   it('shows empty state when no gifs', async () => {
