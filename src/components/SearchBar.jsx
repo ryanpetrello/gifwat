@@ -6,7 +6,7 @@ const SearchBar = forwardRef(function SearchBar({ value, onChange }, ref) {
       ref={ref}
       type="text"
       className="search-bar"
-      placeholder="Search by URL or tag..."
+      placeholder="Search by tag..."
       value={value}
       onChange={(e) => onChange(e.target.value)}
       autoComplete="off"

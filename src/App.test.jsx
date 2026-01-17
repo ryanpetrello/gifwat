@@ -22,7 +22,7 @@ describe('App', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('Search by URL or tag...')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Search by tag...')).toBeInTheDocument();
     });
     expect(screen.getByRole('button', { name: '+' })).toBeInTheDocument();
   });
@@ -49,19 +49,6 @@ describe('App', () => {
     expect(screen.getByText('Click + to get started.')).toBeInTheDocument();
   });
 
-  it('filters gifs by search query in URL', async () => {
-    const user = userEvent.setup();
-    render(<App />);
-
-    await waitFor(() => {
-      expect(screen.getAllByAltText('GIF')).toHaveLength(3);
-    });
-
-    await user.type(screen.getByPlaceholderText('Search by URL or tag...'), 'cat');
-
-    expect(screen.getAllByAltText('GIF')).toHaveLength(1);
-  });
-
   it('filters gifs by search query in tags', async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -70,7 +57,7 @@ describe('App', () => {
       expect(screen.getAllByAltText('GIF')).toHaveLength(3);
     });
 
-    await user.type(screen.getByPlaceholderText('Search by URL or tag...'), 'animal');
+    await user.type(screen.getByPlaceholderText('Search by tag...'), 'animal');
 
     expect(screen.getAllByAltText('GIF')).toHaveLength(1);
     expect(screen.getByText('cat')).toBeInTheDocument();
@@ -84,7 +71,7 @@ describe('App', () => {
       expect(screen.getAllByAltText('GIF')).toHaveLength(3);
     });
 
-    await user.type(screen.getByPlaceholderText('Search by URL or tag...'), 'nonexistent');
+    await user.type(screen.getByPlaceholderText('Search by tag...'), 'nonexistent');
 
     expect(screen.getByText('No GIFs match your search.')).toBeInTheDocument();
   });
@@ -201,7 +188,7 @@ describe('App', () => {
       expect(screen.getAllByAltText('GIF')).toHaveLength(3);
     });
 
-    await user.type(screen.getByPlaceholderText('Search by URL or tag...'), 'CAT');
+    await user.type(screen.getByPlaceholderText('Search by tag...'), 'CAT');
 
     expect(screen.getAllByAltText('GIF')).toHaveLength(1);
   });

@@ -28,9 +28,7 @@ function App() {
       const terms = searchQuery.toLowerCase().split(/\s+/).filter(t => t.length > 0);
       // All terms must match (AND logic)
       return terms.every((term) => {
-        const urlMatch = gif.url.toLowerCase().includes(term);
-        const tagMatch = gif.tags.some((tag) => tag.toLowerCase().includes(term));
-        return urlMatch || tagMatch;
+        return gif.tags.some((tag) => tag.toLowerCase().includes(term));
       });
     });
   }, [gifs, searchQuery]);
@@ -151,6 +149,7 @@ function App() {
         <AddGifModal
           onAdd={handleAddGif}
           onClose={() => setShowAddModal(false)}
+          initialUrl={searchQuery.trim()}
         />
       )}
     </div>

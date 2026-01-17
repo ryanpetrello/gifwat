@@ -147,4 +147,18 @@ describe('AddGifModal', () => {
     expect(screen.queryByText('Could not load preview')).not.toBeInTheDocument();
     expect(screen.getByAltText('Preview')).toBeInTheDocument();
   });
+
+  it('pre-fills URL field when initialUrl is a valid URL', () => {
+    render(<AddGifModal onAdd={() => {}} onClose={() => {}} initialUrl="https://example.com/test.gif" />);
+
+    expect(screen.getByLabelText('GIF URL')).toHaveValue('https://example.com/test.gif');
+    expect(screen.getByRole('button', { name: 'Add GIF' })).toBeEnabled();
+  });
+
+  it('leaves URL field empty when initialUrl is not a valid URL', () => {
+    render(<AddGifModal onAdd={() => {}} onClose={() => {}} initialUrl="not a url" />);
+
+    expect(screen.getByLabelText('GIF URL')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Add GIF' })).toBeDisabled();
+  });
 });

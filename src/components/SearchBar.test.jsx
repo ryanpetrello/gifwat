@@ -7,7 +7,7 @@ import SearchBar from './SearchBar';
 describe('SearchBar', () => {
   it('renders with placeholder text', () => {
     render(<SearchBar value="" onChange={() => {}} />);
-    expect(screen.getByPlaceholderText('Search by URL or tag...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search by tag...')).toBeInTheDocument();
   });
 
   it('displays the provided value', () => {
@@ -20,7 +20,7 @@ describe('SearchBar', () => {
     const handleChange = vi.fn();
     render(<SearchBar value="" onChange={handleChange} />);
 
-    const input = screen.getByPlaceholderText('Search by URL or tag...');
+    const input = screen.getByPlaceholderText('Search by tag...');
     await user.type(input, 'a');
 
     expect(handleChange).toHaveBeenCalledWith('a');
@@ -31,12 +31,12 @@ describe('SearchBar', () => {
     render(<SearchBar ref={ref} value="" onChange={() => {}} />);
 
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
-    expect(ref.current.placeholder).toBe('Search by URL or tag...');
+    expect(ref.current.placeholder).toBe('Search by tag...');
   });
 
   it('has autocomplete disabled', () => {
     render(<SearchBar value="" onChange={() => {}} />);
-    const input = screen.getByPlaceholderText('Search by URL or tag...');
+    const input = screen.getByPlaceholderText('Search by tag...');
 
     expect(input).toHaveAttribute('autocomplete', 'off');
     expect(input).toHaveAttribute('autocorrect', 'off');

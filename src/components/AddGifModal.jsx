@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-function AddGifModal({ onAdd, onClose }) {
-  const [url, setUrl] = useState('');
+function AddGifModal({ onAdd, onClose, initialUrl = '' }) {
+  const isUrl = (str) => /^https?:\/\//i.test(str);
+  const [url, setUrl] = useState(isUrl(initialUrl) ? initialUrl : '');
   const [tagsInput, setTagsInput] = useState('');
   const [previewError, setPreviewError] = useState(false);
 
