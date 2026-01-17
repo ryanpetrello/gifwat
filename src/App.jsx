@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { appWindow } from '@tauri-apps/api/window';
 import SearchBar from './components/SearchBar';
@@ -10,6 +10,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const searchRef = useRef(null);
 
   const loadGifs = useCallback(async () => {
@@ -18,6 +19,26 @@ function App() {
       setGifs(data);
     } catch (err) {
       console.error('Failed to load gifs:', err);
+    }
+  }, []);
+
+  const filteredGifs = useMemo(() => {
+    return gifs.filter((gif) => {
+      if (!searchQuery.trim()) return true;
+      const query = searchQuery.toLowerCase();
+      const urlMatch = gif.url.toLowerCase().includes(query);
+      const tagMatch = gif.tags.some((tag) => tag.toLowerCase().includes(query));
+      return urlMatch || tagMatch;
+    });
+  }, [gifs, searchQuery]);
+
+  const handleCopyUrl = useCallback(async (id, url) => {
+    try {
+      await invoke('copy_to_clipboard', { text: url });
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   }, []);
 
@@ -35,16 +56,42 @@ function App() {
     return () => { unlisten.then(fn => fn()); };
   }, [showAddModal]);
 
-  // Hide window on Escape key
+  // Reset selection when search changes
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [searchQuery]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && !showAddModal) {
+      if (showAddModal) return;
+
+      const cols = 2; // grid columns
+      if (e.key === 'Escape') {
         appWindow.hide();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(i + cols, filteredGifs.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(i - cols, 0));
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(i + 1, filteredGifs.length - 1));
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(i - 1, 0));
+      } else if (e.key === 'Enter' && filteredGifs.length > 0) {
+        e.preventDefault();
+        const gif = filteredGifs[selectedIndex];
+        if (gif) {
+          handleCopyUrl(gif.id, gif.url);
+        }
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [showAddModal]);
+  }, [showAddModal, filteredGifs, selectedIndex, handleCopyUrl]);
 
   const handleAddGif = async (url, tags) => {
     try {
@@ -64,24 +111,6 @@ function App() {
       console.error('Failed to delete gif:', err);
     }
   };
-
-  const handleCopyUrl = async (id, url) => {
-    try {
-      await invoke('copy_to_clipboard', { text: url });
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 1500);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const filteredGifs = gifs.filter((gif) => {
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.toLowerCase();
-    const urlMatch = gif.url.toLowerCase().includes(query);
-    const tagMatch = gif.tags.some((tag) => tag.toLowerCase().includes(query));
-    return urlMatch || tagMatch;
-  });
 
   return (
     <div className="app">
@@ -110,6 +139,7 @@ function App() {
             onCopy={handleCopyUrl}
             onDelete={handleDeleteGif}
             copiedId={copiedId}
+            selectedIndex={selectedIndex}
           />
         )}
       </main>

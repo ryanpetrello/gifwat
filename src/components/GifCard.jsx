@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function GifCard({ gif, onCopy, onDelete, isCopied }) {
+function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -16,7 +16,7 @@ function GifCard({ gif, onCopy, onDelete, isCopied }) {
   };
 
   return (
-    <div className="gif-card">
+    <div className={`gif-card ${isSelected ? 'selected' : ''}`}>
       <div className="gif-preview" onClick={onCopy}>
         {imageError ? (
           <div className="gif-error">Failed to load</div>
@@ -28,8 +28,8 @@ function GifCard({ gif, onCopy, onDelete, isCopied }) {
             loading="lazy"
           />
         )}
-        <div className={`copy-overlay ${isCopied ? 'copied' : ''}`}>
-          {isCopied ? 'Copied!' : 'Click to copy'}
+        <div className={`copy-overlay ${isCopied ? 'copied' : ''} ${isSelected ? 'selected' : ''}`}>
+          {isCopied ? 'Copied!' : isSelected ? 'Enter to copy' : 'Click to copy'}
         </div>
         <button
           className={`delete-x ${showConfirm ? 'confirm' : ''}`}
