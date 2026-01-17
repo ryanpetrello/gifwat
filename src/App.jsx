@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
+import { appWindow } from '@tauri-apps/api/window';
 import SearchBar from './components/SearchBar';
 import GifGrid from './components/GifGrid';
 import AddGifModal from './components/AddGifModal';
@@ -9,6 +10,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const searchRef = useRef(null);
 
   const loadGifs = useCallback(async () => {
     try {
@@ -22,6 +24,27 @@ function App() {
   useEffect(() => {
     loadGifs();
   }, [loadGifs]);
+
+  // Focus search bar when window gains focus
+  useEffect(() => {
+    const unlisten = appWindow.onFocusChanged(({ payload: focused }) => {
+      if (focused && searchRef.current && !showAddModal) {
+        searchRef.current.focus();
+      }
+    });
+    return () => { unlisten.then(fn => fn()); };
+  }, [showAddModal]);
+
+  // Hide window on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !showAddModal) {
+        appWindow.hide();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showAddModal]);
 
   const handleAddGif = async (url, tags) => {
     try {
@@ -63,7 +86,7 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        <SearchBar ref={searchRef} value={searchQuery} onChange={setSearchQuery} />
         <button className="add-button" onClick={() => setShowAddModal(true)}>
           +
         </button>

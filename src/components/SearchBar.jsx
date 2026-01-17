@@ -1,6 +1,9 @@
-function SearchBar({ value, onChange }) {
+import { forwardRef } from 'react';
+
+const SearchBar = forwardRef(function SearchBar({ value, onChange }, ref) {
   return (
     <input
+      ref={ref}
       type="text"
       className="search-bar"
       placeholder="Search by URL or tag..."
@@ -8,6 +11,6 @@ function SearchBar({ value, onChange }) {
       onChange={(e) => onChange(e.target.value)}
     />
   );
-}
+});
 
 export default SearchBar;
