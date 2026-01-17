@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (isSelected && cardRef.current) {
+      cardRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [isSelected]);
 
   const handleDeleteClick = (e) => {
     e.stopPropagation();
@@ -16,7 +23,7 @@ function GifCard({ gif, onCopy, onDelete, isCopied, isSelected }) {
   };
 
   return (
-    <div className={`gif-card ${isSelected ? 'selected' : ''}`}>
+    <div ref={cardRef} className={`gif-card ${isSelected ? 'selected' : ''}`}>
       <div className="gif-preview" onClick={onCopy}>
         {imageError ? (
           <div className="gif-error">Failed to load</div>

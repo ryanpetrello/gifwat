@@ -10,7 +10,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef(null);
 
   const loadGifs = useCallback(async () => {
@@ -58,7 +58,7 @@ function App() {
 
   // Reset selection when search changes
   useEffect(() => {
-    setSelectedIndex(0);
+    setSelectedIndex(-1);
   }, [searchQuery]);
 
   // Keyboard navigation
@@ -71,17 +71,17 @@ function App() {
         appWindow.hide();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedIndex((i) => Math.min(i + cols, filteredGifs.length - 1));
+        setSelectedIndex((i) => i < 0 ? 0 : Math.min(i + cols, filteredGifs.length - 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setSelectedIndex((i) => Math.max(i - cols, 0));
+        setSelectedIndex((i) => i < 0 ? 0 : Math.max(i - cols, 0));
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        setSelectedIndex((i) => Math.min(i + 1, filteredGifs.length - 1));
+        setSelectedIndex((i) => i < 0 ? 0 : Math.min(i + 1, filteredGifs.length - 1));
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        setSelectedIndex((i) => Math.max(i - 1, 0));
-      } else if (e.key === 'Enter' && filteredGifs.length > 0) {
+        setSelectedIndex((i) => i < 0 ? 0 : Math.max(i - 1, 0));
+      } else if (e.key === 'Enter' && selectedIndex >= 0 && filteredGifs.length > 0) {
         e.preventDefault();
         const gif = filteredGifs[selectedIndex];
         if (gif) {
