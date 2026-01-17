@@ -25,10 +25,13 @@ function App() {
   const filteredGifs = useMemo(() => {
     return gifs.filter((gif) => {
       if (!searchQuery.trim()) return true;
-      const query = searchQuery.toLowerCase();
-      const urlMatch = gif.url.toLowerCase().includes(query);
-      const tagMatch = gif.tags.some((tag) => tag.toLowerCase().includes(query));
-      return urlMatch || tagMatch;
+      const terms = searchQuery.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+      // All terms must match (AND logic)
+      return terms.every((term) => {
+        const urlMatch = gif.url.toLowerCase().includes(term);
+        const tagMatch = gif.tags.some((tag) => tag.toLowerCase().includes(term));
+        return urlMatch || tagMatch;
+      });
     });
   }, [gifs, searchQuery]);
 

@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 function AddGifModal({ onAdd, onClose }) {
   const [url, setUrl] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [previewError, setPreviewError] = useState(false);
 
+  const tags = useMemo(() => {
+    return tagsInput.split(/\s+/).filter((t) => t.length > 0);
+  }, [tagsInput]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!url.trim()) return;
-
-    const tags = tagsInput
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-
     onAdd(url.trim(), tags);
+  };
+
+  const removeTag = (indexToRemove) => {
+    const newTags = tags.filter((_, i) => i !== indexToRemove);
+    setTagsInput(newTags.join(' '));
   };
 
   const handleUrlChange = (e) => {

@@ -4,6 +4,21 @@
   padding: 0;
 }
 
+/* Round the right corners of the scrollbar area */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 0 10px 10px 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
 :root {
   --bg-primary: #1a1a2e;
   --bg-secondary: #16213e;
@@ -28,8 +43,8 @@ body {
   flex-direction: column;
   min-height: 100vh;
   background: var(--bg-primary);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px 0 0 10px;
+  border: none;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
