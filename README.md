@@ -2,6 +2,8 @@
 
 A macOS menu bar app for cataloging and quickly accessing GIFs. Spiritual successor to [GifWit](https://gifwit.com/).
 
+![GifWat Screenshot](example.png)
+
 ## Prerequisites
 
 **Rust**

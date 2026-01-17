@@ -7,9 +7,12 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
+
+// Store last known tray icon position for keyboard shortcut
+static LAST_TRAY_POSITION: Mutex<(f64, f64)> = Mutex::new((0.0, 0.0));
 use tauri::{
     AppHandle, ClipboardManager, CustomMenuItem, GlobalShortcutManager, Manager,
-    SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, WindowEvent,
+    SystemTray, SystemTrayEvent, SystemTrayMenu, WindowEvent,
 };
 
 #[cfg(target_os = "macos")]
@@ -138,7 +141,7 @@ fn show_window_at_position(app: &AppHandle, tray_x: f64, tray_y: f64) {
         // Center the window horizontally under the tray icon
         let x = (tray_x as i32) - (window_width / 2);
         // Position just below the menu bar
-        let y = tray_y as i32 + 5;
+        let y = tray_y as i32;
 
         window.set_position(tauri::Position::Physical(
             tauri::PhysicalPosition { x, y }
@@ -149,6 +152,11 @@ fn show_window_at_position(app: &AppHandle, tray_x: f64, tray_y: f64) {
 }
 
 fn toggle_window_at_position(app: &AppHandle, tray_x: f64, tray_y: f64) {
+    // Remember this position for keyboard shortcut
+    if let Ok(mut pos) = LAST_TRAY_POSITION.lock() {
+        *pos = (tray_x, tray_y);
+    }
+
     if let Some(window) = app.get_window("main") {
         if window.is_visible().unwrap_or(false) {
             window.hide().ok();
@@ -158,13 +166,23 @@ fn toggle_window_at_position(app: &AppHandle, tray_x: f64, tray_y: f64) {
     }
 }
 
-// Fallback for global shortcut (no tray position available)
+// For global shortcut - use last known tray position
 fn toggle_window_default(app: &AppHandle) {
+    let (tray_x, tray_y) = LAST_TRAY_POSITION.lock()
+        .map(|pos| *pos)
+        .unwrap_or((0.0, 0.0));
+
+    // If we have a stored position, use it
+    if tray_x > 0.0 {
+        toggle_window_at_position(app, tray_x, tray_y);
+        return;
+    }
+
+    // Fallback: position near top-right
     if let Some(window) = app.get_window("main") {
         if window.is_visible().unwrap_or(false) {
             window.hide().ok();
         } else {
-            // Position near top-right as fallback
             if let Ok(Some(monitor)) = window.primary_monitor() {
                 let screen_size = monitor.size();
                 let window_width = 320;
