@@ -1,0 +1,16 @@
+# Rust build artifacts
+src-tauri/target/
+
+# Node
+node_modules/
+dist/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
