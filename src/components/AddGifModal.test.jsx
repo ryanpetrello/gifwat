@@ -9,7 +9,7 @@ describe('AddGifModal', () => {
 
     expect(screen.getByRole('heading', { name: 'Add GIF' })).toBeInTheDocument();
     expect(screen.getByLabelText('GIF URL')).toBeInTheDocument();
-    expect(screen.getByLabelText('Tags (comma-separated)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Tags')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add GIF' })).toBeInTheDocument();
   });
@@ -71,7 +71,7 @@ describe('AddGifModal', () => {
     render(<AddGifModal onAdd={handleAdd} onClose={() => {}} />);
 
     await user.type(screen.getByLabelText('GIF URL'), 'https://example.com/test.gif');
-    await user.type(screen.getByLabelText('Tags (comma-separated)'), 'funny, cat, reaction');
+    await user.type(screen.getByLabelText('Tags'), 'funny cat reaction');
     await user.click(screen.getByRole('button', { name: 'Add GIF' }));
 
     expect(handleAdd).toHaveBeenCalledWith('https://example.com/test.gif', ['funny', 'cat', 'reaction']);
@@ -83,19 +83,19 @@ describe('AddGifModal', () => {
     render(<AddGifModal onAdd={handleAdd} onClose={() => {}} />);
 
     await user.type(screen.getByLabelText('GIF URL'), '  https://example.com/test.gif  ');
-    await user.type(screen.getByLabelText('Tags (comma-separated)'), '  funny  ,  cat  ');
+    await user.type(screen.getByLabelText('Tags'), '  funny    cat  ');
     await user.click(screen.getByRole('button', { name: 'Add GIF' }));
 
     expect(handleAdd).toHaveBeenCalledWith('https://example.com/test.gif', ['funny', 'cat']);
   });
 
-  it('filters out empty tags', async () => {
+  it('filters out empty tags from extra spaces', async () => {
     const user = userEvent.setup();
     const handleAdd = vi.fn();
     render(<AddGifModal onAdd={handleAdd} onClose={() => {}} />);
 
     await user.type(screen.getByLabelText('GIF URL'), 'https://example.com/test.gif');
-    await user.type(screen.getByLabelText('Tags (comma-separated)'), 'funny,,, cat,  ,');
+    await user.type(screen.getByLabelText('Tags'), 'funny     cat   ');
     await user.click(screen.getByRole('button', { name: 'Add GIF' }));
 
     expect(handleAdd).toHaveBeenCalledWith('https://example.com/test.gif', ['funny', 'cat']);

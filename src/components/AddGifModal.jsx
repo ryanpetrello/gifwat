@@ -1,23 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 
 function AddGifModal({ onAdd, onClose }) {
   const [url, setUrl] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [previewError, setPreviewError] = useState(false);
 
-  const tags = useMemo(() => {
-    return tagsInput.split(/\s+/).filter((t) => t.length > 0);
-  }, [tagsInput]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!url.trim()) return;
-    onAdd(url.trim(), tags);
-  };
 
-  const removeTag = (indexToRemove) => {
-    const newTags = tags.filter((_, i) => i !== indexToRemove);
-    setTagsInput(newTags.join(' '));
+    const tags = tagsInput.split(/\s+/).filter((t) => t.length > 0);
+    onAdd(url.trim(), tags);
   };
 
   const handleUrlChange = (e) => {
@@ -59,13 +52,17 @@ function AddGifModal({ onAdd, onClose }) {
           )}
 
           <div className="form-group">
-            <label htmlFor="tags">Tags (comma-separated)</label>
+            <label htmlFor="tags">Tags</label>
             <input
               id="tags"
               type="text"
-              placeholder="funny, reaction, cat"
+              placeholder="funny reaction cat"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
           </div>
 

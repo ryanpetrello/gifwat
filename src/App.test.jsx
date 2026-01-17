@@ -133,7 +133,7 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: '+' }));
     await user.type(screen.getByLabelText('GIF URL'), 'https://example.com/new.gif');
-    await user.type(screen.getByLabelText('Tags (comma-separated)'), 'new, test');
+    await user.type(screen.getByLabelText('Tags'), 'new test');
     await user.click(screen.getByRole('button', { name: 'Add GIF' }));
 
     await waitFor(() => {
