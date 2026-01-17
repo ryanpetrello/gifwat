@@ -8,15 +8,17 @@ A macOS menu bar app for cataloging and quickly accessing GIFs. Spiritual succes
 
 ## Prerequisites
 
+GifWat is built with [Tauri](https://tauri.app/), a lightweight alternative to Electron that uses a Rust backend with a web-based frontend (specifically, React, for this project).
+
 **Rust**
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 ```
 
-**Node.js** (v18+)
+**Node.js** (v20+)
 ```bash
-brew install node
+nvm install 20
 ```
 
 ## Development
